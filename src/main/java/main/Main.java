@@ -14,10 +14,8 @@ public class Main {
 
     private static void runMerge(Path path){
 
-        MyFileVisit mfv = new MyFileVisit();
-
         try {
-            Files.walkFileTree(path, mfv);
+            Files.walkFileTree(path, new MyFileVisit());
         } catch (IOException e) {
             e.printStackTrace();
         }

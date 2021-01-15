@@ -1,10 +1,7 @@
 package main;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.List;
@@ -40,11 +37,18 @@ public class MyFileVisit extends SimpleFileVisitor<Path> {
         } else {
             System.out.println("У файла " + fileName + " нет расширения");
         }
-
         return FileVisitResult.CONTINUE;
     }
 
-    private void parseZIP(Path path) {
+    private void parseZIP(Path path) throws IOException{
+        FileSystem fs = FileSystems.newFileSystem(path, null);
+        Path zipPath = fs.getPath("/");
+
+        try {
+            Files.walkFileTree(zipPath, new MyFileVisit());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void parseCSV(Path path) throws IOException{
