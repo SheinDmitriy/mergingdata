@@ -1,5 +1,11 @@
 package main;
 
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.json.simple.JSONObject;
+
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -7,18 +13,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.nio.file.FileVisitResult.CONTINUE;
+import static java.nio.file.FileVisitResult.TERMINATE;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class MyFileVisit extends SimpleFileVisitor<Path> {
 
-    private static Map<String, Integer> merge_key= new HashMap<>();
+    private static FileWriter jsonfile;
 
+    private JSONObject jsonObjectV1 = new JSONObject();
+    private JSONObject jsonObjectV2 = new JSONObject();
+    private JSONObject jsonObjectV3 = new JSONObject();
+
+
+    private static Map<String, Integer> merge_key= new HashMap<>();
     static {
-        merge_key.put("mark01", 0);
-        merge_key.put("mark17", 0);
-        merge_key.put("mark23", 0);
-        merge_key.put("mark35", 0);
-        merge_key.put("markfv", 0);
-        merge_key.put("markfx", 0);
-        merge_key.put("markft", 0);
+        merge_key.put("mark01", null);
+        merge_key.put("mark17", null);
+        merge_key.put("mark23", null);
+        merge_key.put("mark35", null);
+        merge_key.put("markfv", null);
+        merge_key.put("markfx", null);
+        merge_key.put("markft", null);
     }
 
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
@@ -37,7 +54,7 @@ public class MyFileVisit extends SimpleFileVisitor<Path> {
         } else {
             System.out.println("У файла " + fileName + " нет расширения");
         }
-        return FileVisitResult.CONTINUE;
+        return CONTINUE;
     }
 
     private void parseZIP(Path path) throws IOException{
@@ -54,13 +71,37 @@ public class MyFileVisit extends SimpleFileVisitor<Path> {
     private void parseCSV(Path path) throws IOException{
         List<String> lines = Files.readAllLines(path);
         for (String s: lines) {
+            int count = 0;
             if(!s.startsWith("#")){
                 String[] date = s.split(",");
-                int count = merge_key.get(date[0].toLowerCase());
+                String key = date[0].toLowerCase();
+                if( merge_key.get(key) != null) {
+                    count = merge_key.get(key);
+                }
                 count = count + Integer.parseInt(date[1]);
-                merge_key.put(date[0].toLowerCase(),count);
+                merge_key.put(key,count);
             }
         }
-        System.out.println(merge_key);
+    }
+
+    @Override
+    public FileVisitResult postVisitDirectory(Path path, IOException exc) throws IOException {
+        if(path.toString().equals("/")){
+            return TERMINATE;
+        }
+        System.out.println("Формируем данные для отчета №2");
+        jsonObjectV2.putAll(merge_key);
+        System.out.println(jsonObjectV2.toString());
+        System.out.println("Формируем файл для отчета №2");
+
+        jsonfile = new FileWriter("report/report №2.txt");
+        jsonfile.write(jsonObjectV2.toJSONString());
+        jsonfile.flush();
+        jsonfile.close();
+
+        return TERMINATE;
+
+
+
     }
 }

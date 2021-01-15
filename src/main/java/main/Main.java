@@ -13,13 +13,10 @@ public class Main {
     }
 
     private static void runMerge(Path path){
-
         try {
             Files.walkFileTree(path, new MyFileVisit());
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 }
