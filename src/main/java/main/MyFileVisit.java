@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,7 @@ public class MyFileVisit extends SimpleFileVisitor<Path> {
     private JSONObject jsonObjectV2 = new JSONObject();
     private JSONObject jsonObjectV3 = new JSONObject();
 
-
-    private static Map<String, Integer> merge_key= new HashMap<>();
+    private static Map<String, Integer> merge_key = new HashMap<>();
     static {
         merge_key.put("mark01", null);
         merge_key.put("mark17", null);
@@ -89,19 +89,36 @@ public class MyFileVisit extends SimpleFileVisitor<Path> {
         if(path.toString().equals("/")){
             return TERMINATE;
         }
+        System.out.println("Формируем данные для отчета №1");
+        merge_key.forEach((k, v) ->{
+            if(v != null){
+                jsonObjectV1.put(k,v);
+            }
+        });
+        System.out.println(jsonObjectV1.toString());
+        System.out.println("Формируем файл для отчета №1");
+        jsonWriteFile(jsonObjectV1, "report №1.txt");
+
         System.out.println("Формируем данные для отчета №2");
         jsonObjectV2.putAll(merge_key);
         System.out.println(jsonObjectV2.toString());
         System.out.println("Формируем файл для отчета №2");
+        jsonWriteFile(jsonObjectV2, "report №2.txt");
 
-        jsonfile = new FileWriter("report/report №2.txt");
-        jsonfile.write(jsonObjectV2.toJSONString());
-        jsonfile.flush();
-        jsonfile.close();
+        System.out.println("Формируем данные для отчета №3");
+
 
         return TERMINATE;
 
 
 
+    }
+
+    private void jsonWriteFile(JSONObject jsonObject, String filename) throws IOException{
+        jsonfile = new FileWriter("report/" + filename);
+        jsonfile.write(jsonObject.toJSONString());
+        System.out.println("Файл " + filename + " успешно создан");
+        jsonfile.flush();
+        jsonfile.close();
     }
 }
