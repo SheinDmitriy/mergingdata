@@ -9,7 +9,22 @@ import java.nio.file.attribute.BasicFileAttributes;
 public class MyFileVisit extends SimpleFileVisitor<Path> {
 
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-        System.out.println(path.getFileName().toString());
+        String fileName = path.getFileName().toString();
+        System.out.println("Обрабатываем файл: " + fileName);
+
+        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0){
+            switch (fileName.substring(fileName.lastIndexOf(".")+1)){
+                case "csv" :
+                    parseCSV(path);
+                    break;
+                case "zip" :
+                    parseZIP(path);
+                    break;
+            }
+        } else {
+            System.out.println("У файла нет расширения");
+        }
+
         return FileVisitResult.CONTINUE;
     }
 }
