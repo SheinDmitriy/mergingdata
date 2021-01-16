@@ -1,6 +1,5 @@
 package main;
 
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.json.simple.JSONObject;
@@ -9,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,11 +105,7 @@ public class MyFileVisit extends SimpleFileVisitor<Path> {
 
         System.out.println("Формируем данные для отчета №3");
 
-
         return TERMINATE;
-
-
-
     }
 
     private void jsonWriteFile(JSONObject jsonObject, String filename) throws IOException{
