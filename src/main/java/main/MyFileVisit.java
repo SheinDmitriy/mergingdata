@@ -32,8 +32,10 @@ public class MyFileVisit extends SimpleFileVisitor<Path> {
     private static ArrayList<Integer> array7 = new ArrayList<>();
 
     // HashMap с заданными ключями и массивами данных для обработки
-    private static Map<String, ArrayList<Integer>> merge_key = new HashMap<>();
-    static {
+    private Map<String, ArrayList<Integer>> merge_key = new HashMap<>();
+
+    // Заполняем HashMap клюяами и пустыми массивами
+    public MyFileVisit() {
         merge_key.put("mark01", array1);
         merge_key.put("mark17", array2);
         merge_key.put("mark23", array3);
@@ -65,7 +67,7 @@ public class MyFileVisit extends SimpleFileVisitor<Path> {
         return CONTINUE;
     }
     // Метод для парсера данных из ZIP файлв
-    private void parseZIP(Path path) throws IOException{
+    public void parseZIP(Path path) throws IOException{
         // Определяем zip файл как папку
         FileSystem fs = FileSystems.newFileSystem(path, null);
         Path zipPath = fs.getPath("/");
@@ -79,7 +81,7 @@ public class MyFileVisit extends SimpleFileVisitor<Path> {
     }
 
     // Метод для прасинга данных из cvs файлов
-    private void parseCSV(Path path) throws IOException{
+    public void parseCSV(Path path) throws IOException{
         // Считываем данные из файла в массив строк
         List<String> lines = Files.readAllLines(path);
         // Обходим каждую строку отдельно
