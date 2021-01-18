@@ -22,7 +22,7 @@ public class MyFileVisitTest {
 
         try {
             myFileVisit.parseCSV(path);
-            assertEquals(myFileVisit.getMerge_key().get("mark17").get(0), i);
+            assertEquals(myFileVisit.getDataForMerge().get("mark17").get(0), i);
         } catch (IOException e) {
             e.printStackTrace();
         }
