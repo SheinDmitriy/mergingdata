@@ -17,11 +17,11 @@ import static java.nio.file.FileVisitResult.TERMINATE;
 @Data
 public class MyFileVisit extends SimpleFileVisitor<Path> {
 
-    private static FileWriter jsonFileWrite;
+    private static FileWriter fileWriter;
 
-    private JSONObject jsonReport1 = new JSONObject();
-    private JSONObject jsonReport2 = new JSONObject();
-    private JSONObject jsonReport3 = new JSONObject();
+    private LinkedHashMap<String, Integer> dataForReport1 = new LinkedHashMap<>();
+    private LinkedHashMap<String, Integer> dataForReport2 = new LinkedHashMap<>();
+    private LinkedHashMap<String, ArrayList<Integer>> dataForReport3 = new LinkedHashMap<>();
 
     private static ArrayList<Integer> arrayDataMark01 = new ArrayList<>();
     private static ArrayList<Integer> arrayDataMark17 = new ArrayList<>();
@@ -116,38 +116,38 @@ public class MyFileVisit extends SimpleFileVisitor<Path> {
             if(!v.isEmpty()){
                 // Сортируем данные в массиве для 3 отчета
                 Collections.sort(v, Collections.reverseOrder());
-                jsonReport3.put(k,v);
+                dataForReport3.put(k,v);
                 // Обходим массивы и складываем значения внутри для отчета 1 и 2
                 int count = 0;
                 for (Integer s: v) {
                     count = count + s;
                 }
-                jsonReport1.put(k, count);
-                jsonReport2.put(k, count);
+                dataForReport1.put(k, count);
+                dataForReport2.put(k, count);
             }else {
                 // Добавляем пустые массивы для отчета 2
-                jsonReport2.put(k, null);
+                dataForReport2.put(k, null);
             }
         });
         // Записываем данные в три разных файла
-        System.out.println(jsonReport3);
-        jsonWriteFile(jsonReport3, "report №3.json");
-        System.out.println(jsonReport1.toString());
+        System.out.println(dataForMerge);
+        jsonWriteFile(dataForMerge, "report №3.json");
+        System.out.println(dataForMerge.toString());
         System.out.println("Формируем файл для отчета №1");
-        jsonWriteFile(jsonReport1, "report №1.json");
-        System.out.println(jsonReport2.toString());
+        jsonWriteFile(dataForReport1, "report №1.json");
+        System.out.println(dataForReport2.toString());
         System.out.println("Формируем файл для отчета №2");
-        jsonWriteFile(jsonReport2, "report №2.json");
+        jsonWriteFile(dataForReport2, "report №2.json");
 
         return TERMINATE;
     }
 
     // Метод для записи данных в файл
-    private void jsonWriteFile(JSONObject jsonObject, String filename) throws IOException{
-        jsonFileWrite = new FileWriter("report/" + filename);
-        jsonFileWrite.write(jsonObject.toJSONString());
+    private void jsonWriteFile(LinkedHashMap dateForWrite, String filename) throws IOException{
+        fileWriter = new FileWriter("report/" + filename);
+        fileWriter.write(dateForWrite.toString());
         System.out.println("Файл " + filename + " успешно создан");
-        jsonFileWrite.flush();
-        jsonFileWrite.close();
+        fileWriter.flush();
+        fileWriter.close();
     }
 }
