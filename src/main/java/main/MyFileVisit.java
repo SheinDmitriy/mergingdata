@@ -2,9 +2,7 @@ package main;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.json.simple.JSONObject;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -17,7 +15,8 @@ import static java.nio.file.FileVisitResult.TERMINATE;
 @Data
 public class MyFileVisit extends SimpleFileVisitor<Path> {
 
-    private static FileWriter fileWriter;
+    private WriteFile writeFile = new WriteFile();
+    private ParseCSVFile parseCSVFile = new ParseCSVFile();
 
     private LinkedHashMap<String, Integer> dataForReport1 = new LinkedHashMap<>();
     private LinkedHashMap<String, Integer> dataForReport2 = new LinkedHashMap<>();
@@ -55,10 +54,10 @@ public class MyFileVisit extends SimpleFileVisitor<Path> {
             // В зависимости от расширения запускаем соответсвующий парсер данных
             switch (fileName.substring(fileName.lastIndexOf(".")+1)){
                 case "csv" :
-                    parseCSV(path);
+                    roundCVSFileInFolder(path);
                     break;
                 case "zip" :
-                    parseZIP(path);
+                    roundFileInZIPFolder(path);
                     break;
             }
         } else {
@@ -67,7 +66,7 @@ public class MyFileVisit extends SimpleFileVisitor<Path> {
         return CONTINUE;
     }
     // Метод для парсера данных из ZIP файлв
-    public void parseZIP(Path path) throws IOException{
+    public void roundFileInZIPFolder(Path path) throws IOException{
         // Определяем zip файл как папку
         FileSystem fs = FileSystems.newFileSystem(path, null);
         Path zipPath = fs.getPath("/");
@@ -81,22 +80,13 @@ public class MyFileVisit extends SimpleFileVisitor<Path> {
     }
 
     // Метод для прасинга данных из cvs файлов
-    public void parseCSV(Path path) throws IOException{
+    public void roundCVSFileInFolder(Path path) throws IOException{
         // Считываем данные из файла в массив строк
         List<String> lines = Files.readAllLines(path);
+
         // Обходим каждую строку отдельно
         for (String s: lines) {
-            ArrayList<Integer> arrayTemp = new ArrayList<>();
-            // Проверяем закоментированна строка или нет
-            if(!s.startsWith("#")){
-                // Разделяем строку на ключ и значение
-                String[] date = s.split(",");
-                String key = date[0].toLowerCase();
-                // Заполняем массивы в HashMap соответственно ключу
-                arrayTemp = dataForMerge.get(key);
-                arrayTemp.add(Integer.parseInt(date[1]));
-                dataForMerge.put(key,arrayTemp);
-            }
+            parseCSVFile.parseLineFromCSV(s, dataForMerge);
         }
         System.out.println(dataForMerge);
     }
@@ -131,23 +121,16 @@ public class MyFileVisit extends SimpleFileVisitor<Path> {
         });
         // Записываем данные в три разных файла
         System.out.println(dataForMerge);
-        jsonWriteFile(dataForMerge, "report №3.json");
-        System.out.println(dataForMerge.toString());
+        writeFile.jsonWriteFile(dataForReport3, "report №3.json");
+        System.out.println(dataForReport3.toString());
         System.out.println("Формируем файл для отчета №1");
-        jsonWriteFile(dataForReport1, "report №1.json");
+        writeFile.jsonWriteFile(dataForReport1, "report №1.json");
         System.out.println(dataForReport2.toString());
         System.out.println("Формируем файл для отчета №2");
-        jsonWriteFile(dataForReport2, "report №2.json");
+        writeFile.jsonWriteFile(dataForReport2, "report №2.json");
 
         return TERMINATE;
     }
 
-    // Метод для записи данных в файл
-    private void jsonWriteFile(LinkedHashMap dateForWrite, String filename) throws IOException{
-        fileWriter = new FileWriter("report/" + filename);
-        fileWriter.write(dateForWrite.toString());
-        System.out.println("Файл " + filename + " успешно создан");
-        fileWriter.flush();
-        fileWriter.close();
-    }
+
 }
