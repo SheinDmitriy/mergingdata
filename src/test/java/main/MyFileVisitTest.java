@@ -1,13 +1,12 @@
 package main;
 
-
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.*;
 
 
 public class MyFileVisitTest {
@@ -15,16 +14,19 @@ public class MyFileVisitTest {
     private MyFileVisit myFileVisit = new MyFileVisit();
 
     @Test
-    public void test_parse() throws IOException {
+    public void test_parse_line_in_CSVFile() throws IOException {
 
-        Path path = Paths.get("src/test/resources/test.csv");
-        Integer i = 24;
+        ParseCSVFile parseCSVFile = new ParseCSVFile();
 
-        try {
-            myFileVisit.roundLineInCVSFile(path);
-            assertEquals(myFileVisit.getDataForMerge().get("mark17").get(0), i);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        LinkedHashMap<String, ArrayList<Integer>> dataForTest = new LinkedHashMap<>();
+        ArrayList<Integer> arrayDataMark01 = new ArrayList<>();
+        dataForTest.put("mark01", arrayDataMark01);
+
+        String line = "mark01,10";
+
+        parseCSVFile.parseLineFromCSV(line, dataForTest);
+        int result = dataForTest.get("mark01").get(0);
+
+        assertEquals(result, 10);
     }
 }
