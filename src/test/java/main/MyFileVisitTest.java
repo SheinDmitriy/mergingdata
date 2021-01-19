@@ -21,7 +21,7 @@ public class MyFileVisitTest {
         Integer i = 24;
 
         try {
-            myFileVisit.roundCVSFileInFolder(path);
+            myFileVisit.roundLineInCVSFile(path);
             assertEquals(myFileVisit.getDataForMerge().get("mark17").get(0), i);
         } catch (IOException e) {
             e.printStackTrace();

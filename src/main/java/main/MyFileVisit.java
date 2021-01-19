@@ -54,7 +54,7 @@ public class MyFileVisit extends SimpleFileVisitor<Path> {
             // В зависимости от расширения запускаем соответсвующий парсер данных
             switch (fileName.substring(fileName.lastIndexOf(".")+1)){
                 case "csv" :
-                    roundCVSFileInFolder(path);
+                    roundLineInCVSFile(path);
                     break;
                 case "zip" :
                     roundFileInZIPFolder(path);
@@ -80,10 +80,9 @@ public class MyFileVisit extends SimpleFileVisitor<Path> {
     }
 
     // Метод для прасинга данных из cvs файлов
-    public void roundCVSFileInFolder(Path path) throws IOException{
+    public void roundLineInCVSFile(Path path) throws IOException{
         // Считываем данные из файла в массив строк
         List<String> lines = Files.readAllLines(path);
-
         // Обходим каждую строку отдельно
         for (String s: lines) {
             parseCSVFile.parseLineFromCSV(s, dataForMerge);
